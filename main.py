@@ -1,7 +1,6 @@
 import random
 import operator
 
-# turtle start = 1
 # we want to find the steady state probability
 # Run the model from task 2 for 3 time steps. Based on 10000 repetitions report the probability and
 # standard deviation that at time step three (that is after three updates) the turtle is at cell 1,3,9.
@@ -26,6 +25,33 @@ def get_random_num():
     return random.uniform(0, 1)
 
 
+def tower_sample(current_state: str, chain: dict):
+    # tower sampling chooses a state to transition to based off of the probabilities of the transitions
+    k_possible_transitions_from_current_state = len(chain[current_state].keys())
+    # print("current_state: {}".format(current_state))
+    # print("possible transitions: {}".format(k_possible_transitions_from_current_state))
+    ordered_probabilities = sorted(chain[current_state].items(), key=operator.itemgetter(1), reverse=True)
+    t = [0] * (k_possible_transitions_from_current_state + 1)  # array of size k + 1 with all elements set to 0
+    for i in range(0, k_possible_transitions_from_current_state):  # add ordered probabilities into this array
+        t[i + 1] = ordered_probabilities[i]
+    # print("ordered probability t array: {}".format(t))
+    r = get_random_num()
+    sum_of_t_elements = 0
+    state = None
+    for probability in range(0, len(t)):
+        if probability == 0:
+            sum_of_t_elements = t[probability] + sum_of_t_elements
+        else:
+            sum_of_t_elements = t[probability][1] + sum_of_t_elements  # if not first element then the results will be in a tuple.
+            # print("this iteration of sum: {}".format(sum_of_t_elements))
+        if not (r > sum_of_t_elements): # if r is not greater than the sum of the elements, then we have found the state to transition to
+            # print("stopping sum as r {} which is smaller than the sum: {}".format(r, sum_of_t_elements))
+            # print("the state that r is smaller than or equal to is: {}".format(t[probability]))
+            state = t[probability][0]
+            break
+    return int(state)
+
+
 if __name__ == '__main__':
     # below we have a markov chain that contains the transition probabilities, so now we do not need the metropolis algorithm
     chain = {'1': {'1': 0.5, '2': 0.25, '4': 0.25},
@@ -43,43 +69,22 @@ if __name__ == '__main__':
     states = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
     times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    current_state = random.choice(states)
-    time_steps = 3
-    repetitions = 1000
+    current_state = '1' #random.choice(states)
+    time_steps = 1000000
+    repetitions = 1
 
     chosen_state = None
-    for time_step in range(0, time_steps):
-        for repetition in range(0, repetitions):
-            # print("we are in state: {}".format(state_choice))
-            # tower sample: algorithm below
-            k_possible_transitions_from_current_state = len(chain[current_state].keys())
-            # print("there are {} possible transitions".format(k_possible_transitions_from_current_state))
-
-            ordered_probabilities = sorted(chain[current_state].items(), key=operator.itemgetter(1), reverse=True)
-
-            t = [0] * (k_possible_transitions_from_current_state + 1)  # array of size k + 1 with all elements set to 0
-            for i in range(0, k_possible_transitions_from_current_state):  # add ordered probabilities into this array
-                t[i + 1] = ordered_probabilities[i]
-
-            r = get_random_num()
-
-            sum_of_t_elements = 0
-            chosen_state = None
-            for i in range(0, len(t)):
-                if i == 0:
-                    sum_of_t_elements = t[i] + sum_of_t_elements
-                else:
-                    sum_of_t_elements = t[i][1] + sum_of_t_elements
-                if not (r > sum_of_t_elements):
-                    chosen_state = t[i]
-                    break
-            chosen_state = int(chosen_state[0])
-
-             # tower sample end
-            state_choice = str(chosen_state)
-            chosen_state = state_choice
-        # print("we have finished in state {}".format(chosen_state))
-        times_in_each_state_count[int(chosen_state)] = times_in_each_state_count[int(chosen_state)] + 1
+    for time_step in range(1, time_steps + 1):
+        for repetition in range(1, repetitions + 1):
+            chosen_state = tower_sample(current_state=current_state, chain=chain)
+            # print("transitioning to state: {}".format(chosen_state))
+            current_state = str(chosen_state)
+        times_in_each_state_count[chosen_state] = times_in_each_state_count[chosen_state] + 1
+    print(" ")
     print(times_in_each_state_count)
-    probability = times_in_each_state_count[3] / time_steps
-    print(probability)
+    probability_of_being_in_1 = times_in_each_state_count[1] / time_steps
+    probability_of_being_in_3 = times_in_each_state_count[3] / time_steps
+    probability_of_being_in_9 = times_in_each_state_count[9] / time_steps
+    print(probability_of_being_in_1)
+    print(probability_of_being_in_3)
+    print(probability_of_being_in_9)
