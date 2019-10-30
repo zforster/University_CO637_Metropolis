@@ -18,8 +18,9 @@ def valid_probabilities(chain: dict):
         for i in probs:
             a = a + (probs[i])
         if a != 1:
-            return False
-    return True
+            print('Not all probability values sum to 1')
+            exit(1)
+
 
 def get_random_num():
     return random.uniform(0, 1)
@@ -37,24 +38,24 @@ if __name__ == '__main__':
              '8': {'9': 1/4, '7': 1/4, '5': 1/6, '8': 1/3},
              '9': {'9': 7/12, '6': 1/6, '8': 1/4}
              }
+    valid_probabilities(chain=chain)
 
     states = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
-    count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    if not valid_probabilities(chain=chain):
-        print('fail')
-        exit(1)
-    state_choice = '1' #  random.choice(states)
+    current_state = random.choice(states)
     time_steps = 3
     repetitions = 1000
 
-    for x in range(0, time_steps):
-        for y in range(0, repetitions):
-            # tower sample:
+    chosen_state = None
+    for time_step in range(0, time_steps):
+        for repetition in range(0, repetitions):
+            # print("we are in state: {}".format(state_choice))
+            # tower sample: algorithm below
+            k_possible_transitions_from_current_state = len(chain[current_state].keys())
+            # print("there are {} possible transitions".format(k_possible_transitions_from_current_state))
 
-            k_possible_transitions_from_current_state = len(chain[state_choice].keys())
-
-            ordered_probabilities = sorted(chain[state_choice].items(), key=operator.itemgetter(1), reverse=True)
+            ordered_probabilities = sorted(chain[current_state].items(), key=operator.itemgetter(1), reverse=True)
 
             t = [0] * (k_possible_transitions_from_current_state + 1)  # array of size k + 1 with all elements set to 0
             for i in range(0, k_possible_transitions_from_current_state):  # add ordered probabilities into this array
@@ -72,10 +73,13 @@ if __name__ == '__main__':
                 if not (r > sum_of_t_elements):
                     chosen_state = t[i]
                     break
-            print("choose " + str(chosen_state[0]))
+            chosen_state = int(chosen_state[0])
 
-
-
-
-        # count[i] = count[i] + 1
-    # estimate steady state probability = count[i] / n
+             # tower sample end
+            state_choice = str(chosen_state)
+            chosen_state = state_choice
+        # print("we have finished in state {}".format(chosen_state))
+        times_in_each_state_count[int(chosen_state)] = times_in_each_state_count[int(chosen_state)] + 1
+    print(times_in_each_state_count)
+    probability = times_in_each_state_count[3] / time_steps
+    print(probability)
