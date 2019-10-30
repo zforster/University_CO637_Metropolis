@@ -1,12 +1,13 @@
 import random
 import operator
+from decimal import *
 
 # we want to find the steady state probability
 # Run the model from task 2 for 3 time steps. Based on 10000 repetitions report the probability and
 # standard deviation that at time step three (that is after three updates) the turtle is at cell 1,3,9.
 
 
-def valid_probabilities(chain: dict):
+def valid_probabilities(chain):
     """
     :param chain: The markov chain model
     :return: true if all probabilities sum to 1, false if otherwise
@@ -25,52 +26,58 @@ def get_random_num():
     return random.uniform(0, 1)
 
 
-def tower_sample(current_state: str, chain: dict):
+def tower_sample(current_state, chain):
     # tower sampling chooses a state to transition to based off of the probabilities of the transitions
     k_possible_transitions_from_current_state = len(chain[current_state].keys())
-    # print("current_state: {}".format(current_state))
-    # print("possible transitions: {}".format(k_possible_transitions_from_current_state))
-    ordered_probabilities = sorted(chain[current_state].items(), key=operator.itemgetter(1), reverse=True)
+    print("current_state: {}".format(current_state))
+    print("possible transitions: {}".format(k_possible_transitions_from_current_state))
+    # ordered_probabilities = sorted(chain[current_state].items(), key=operator.itemgetter(1), reverse=True)
+    ordered_probabilities = sorted(chain[current_state].values(), reverse=True)
     t = [0] * (k_possible_transitions_from_current_state + 1)  # array of size k + 1 with all elements set to 0
     for i in range(0, k_possible_transitions_from_current_state):  # add ordered probabilities into this array
         t[i + 1] = ordered_probabilities[i]
-    # print("ordered probability t array: {}".format(t))
-    r = get_random_num()
+    print("ordered probability t array: {}".format(t))
+    r = 0.97365234#get_random_num()
     sum_of_t_elements = 0
     state = None
     for probability in range(0, len(t)):
-        if probability == 0:
-            sum_of_t_elements = t[probability] + sum_of_t_elements
-        else:
-            sum_of_t_elements = t[probability][1] + sum_of_t_elements  # if not first element then the results will be in a tuple.
-            # print("this iteration of sum: {}".format(sum_of_t_elements))
-        if not (r > sum_of_t_elements): # if r is not greater than the sum of the elements, then we have found the state to transition to
-            # print("stopping sum as r {} which is smaller than the sum: {}".format(r, sum_of_t_elements))
-            # print("the state that r is smaller than or equal to is: {}".format(t[probability]))
-            state = t[probability][0]
-            break
+        # print("loop: {}".format(str(probability)))
+        if probability != 0:
+            transition_probability = t[probability]
+            sum_of_t_elements = transition_probability + sum_of_t_elements
+            print(sum_of_t_elements)
+            # print(1 == sum_of_t_elements)
+            # sum_of_t_elements = transition_probability + sum_of_t_elements  # if not first element then the results will be in a tuple.
+            # print("sum is {}".format(sum_of_t_elements))
+        #     print("this iteration of sum: {}".format(sum_of_t_elements))
+        # if not (r > sum_of_t_elements): # if r is not greater than the sum of the elements, then we have found the state to transition to
+        #     print("the state that r is smaller than or equal to is: {}".format(t[probability]))
+        #     state = t[probability][0]
+        #     print("stopping sum as r {} which is smaller than the sum: {}, hence we choose {} to state {}".format(r, sum_of_t_elements, i, state))
+        #     break
     return int(state)
 
 
 if __name__ == '__main__':
     # below we have a markov chain that contains the transition probabilities, so now we do not need the metropolis algorithm
-    chain = {'1': {'1': 0.5, '2': 0.25, '4': 0.25},
-             '2': {'1': 0.25, '2': 0.25, '3': 0.25, '5': 0.25},
-             '3': {'2': 0.25, '3': 0.5, '6': 0.25},
-             '4': {'1': 0.125, '5': 0.25, '4': 0.375, '7': 0.25},
-             '5': {'4': 1/4, '2': 1/8, '6': 1/4, '8': 1/4, '5': 1/8},
-             '6': {'9': 1/4, '3': 1/8, '5': 1/4, '6': 3/8},
-             '7': {'4': 1/6, '8': 1/4, '7': 7/12},
-             '8': {'9': 1/4, '7': 1/4, '5': 1/6, '8': 1/3},
-             '9': {'9': 7/12, '6': 1/6, '8': 1/4}
-             }
+    # chain = {'1': {'1': 0.5, '2': 0.25, '4': 0.25},
+    #          '2': {'1': 0.25, '2': 0.25, '3': 0.25, '5': 0.25},
+    #          '3': {'2': 0.25, '3': 0.5, '6': 0.25},
+    #          '4': {'1': 0.125, '5': 0.25, '4': 0.375, '7': 0.25},
+    #          '5': {'4': 1/4, '2': 1/8, '6': 1/4, '8': 1/4, '5': 1/8},
+    #          '6': {'9': 1/4, '3': 1/8, '5': 1/4, '6': 3/8},
+    #          '7': {'4': 1/6, '8': 1/4, '7': 7/12},
+    #          '8': {'9': 1/4, '7': 1/4, '5': 1/6, '8': 1/3},
+    #          '9': {'9': 7/12, '6': 1/6, '8': 1/4}
+    #          }
+    chain = {'4': {'4': 0.1, '1': 0.7, '94': 0.2}}
     valid_probabilities(chain=chain)
 
     states = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
     times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    current_state = '1' #random.choice(states)
-    time_steps = 1000000
+    current_state = '4'# random.choice(states)
+    time_steps = 1
     repetitions = 1
 
     chosen_state = None
