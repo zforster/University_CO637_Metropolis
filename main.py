@@ -61,14 +61,17 @@ def get_mean(listof: list, runs: int):
 
 
 def get_standard(listof: list, mean: float):
-    thing1 = []
-    for i in listof:
-        thing1.append((i - mean) ** 2)
-    sumof = 0
-    for i in thing1:
-        sumof = sumof + i
-    variance = ((1/len(thing1) * sumof))
-    return (math.sqrt(variance))
+    mean_minus_probability_squared_values = []
+    for probability in listof:
+        prob_minus_mean = probability - mean
+        squared_val = (prob_minus_mean ** 2)
+        mean_minus_probability_squared_values.append(squared_val)
+    summed_values = 0
+    for num in mean_minus_probability_squared_values:
+        summed_values = summed_values + num
+    variance = ((1/len(mean_minus_probability_squared_values)) * summed_values)
+    return math.sqrt(variance)
+
 
 if __name__ == '__main__':
     # below we have a markov chain that contains the transition probabilities, so now we do not need the metropolis algorithm
@@ -91,7 +94,7 @@ if __name__ == '__main__':
     print("STARTING STATE: {}".format(current_state))
     time_steps = 3
     repetitions = 10000
-    total_runs = 30
+    total_runs = 50
 
     one = []
     nine = []
@@ -122,14 +125,14 @@ if __name__ == '__main__':
         times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     print(" ")
 
-    mean_one = (get_mean(listof=one, runs=total_runs))
+    mean_one = get_mean(listof=one, runs=total_runs)
     standard_deviation_one = get_standard(listof=one, mean=mean_one)
     print("probability of state one: {}, standard deviation: {}".format(mean_one, standard_deviation_one))
 
-    mean_three = (get_mean(listof=three, runs=total_runs))
+    mean_three = get_mean(listof=three, runs=total_runs)
     standard_deviation_three = get_standard(listof=three, mean=mean_three)
     print("probability of state three: {}, standard deviation: {}".format(mean_three, standard_deviation_three))
 
-    mean_nine = (get_mean(listof=nine, runs=total_runs))
+    mean_nine = get_mean(listof=nine, runs=total_runs)
     standard_deviation_nine = get_standard(listof=nine, mean=mean_nine)
     print("probability of state nine: {}, standard deviation: {}".format(mean_nine, standard_deviation_nine))
