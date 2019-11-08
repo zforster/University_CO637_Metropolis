@@ -91,17 +91,17 @@ if __name__ == '__main__':
     times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     time_steps = 1000000
-    repetitions = 1
-    total_runs = 40
+    x = 1
+    y = 40
 
     one = []
     nine = []
     three = []
 
-    for i in range(0, total_runs):
+    for i in range(0, x):
         current_state = random.choice(states)
         print("STARTING STATE: {}".format(current_state))
-        for repetition in range(1, repetitions + 1):
+        for repetition in range(1, y + 1):
             for time_step in range(1, time_steps + 1):
                 chosen_state = tower_sample(current_state=current_state, chain=chain)
                 current_state = str(chosen_state)
