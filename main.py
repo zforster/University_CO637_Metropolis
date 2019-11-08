@@ -90,49 +90,20 @@ if __name__ == '__main__':
     states = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
     times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-    current_state = random.choice(states)
-    print("STARTING STATE: {}".format(current_state))
-    time_steps = 3
-    repetitions = 10000
-    total_runs = 50
+    time_steps = 1000000
+    repetitions = 1
+    total_runs = 40
 
     one = []
     nine = []
     three = []
 
     for i in range(0, total_runs):
+        current_state = random.choice(states)
+        print("STARTING STATE: {}".format(current_state))
         for repetition in range(1, repetitions + 1):
             for time_step in range(1, time_steps + 1):
                 chosen_state = tower_sample(current_state=current_state, chain=chain)
                 current_state = str(chosen_state)
             times_in_each_state_count[chosen_state] = times_in_each_state_count[chosen_state] + 1
         print(times_in_each_state_count)
-        probability_of_being_in_1 = times_in_each_state_count[1] / repetitions
-        probability_of_being_in_2 = times_in_each_state_count[2] / repetitions
-        probability_of_being_in_3 = times_in_each_state_count[3] / repetitions
-        probability_of_being_in_4 = times_in_each_state_count[4] / repetitions
-        probability_of_being_in_5 = times_in_each_state_count[5] / repetitions
-        probability_of_being_in_6 = times_in_each_state_count[6] / repetitions
-        probability_of_being_in_7 = times_in_each_state_count[7] / repetitions
-        probability_of_being_in_8 = times_in_each_state_count[8] / repetitions
-        probability_of_being_in_9 = times_in_each_state_count[9] / repetitions
-        print('Estimated probability of being in state 1: {}'.format(probability_of_being_in_1))
-        print('Estimated probability of being in state 3: {}'.format(probability_of_being_in_3))
-        print('Estimated probability of being in state 9: {}'.format(probability_of_being_in_9))
-        one.append(probability_of_being_in_1)
-        three.append(probability_of_being_in_3)
-        nine.append(probability_of_being_in_9)
-        times_in_each_state_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    print(" ")
-
-    mean_one = get_mean(listof=one, runs=total_runs)
-    standard_deviation_one = get_standard(listof=one, mean=mean_one)
-    print("probability of state one: {}, standard deviation: {}".format(mean_one, standard_deviation_one))
-
-    mean_three = get_mean(listof=three, runs=total_runs)
-    standard_deviation_three = get_standard(listof=three, mean=mean_three)
-    print("probability of state three: {}, standard deviation: {}".format(mean_three, standard_deviation_three))
-
-    mean_nine = get_mean(listof=nine, runs=total_runs)
-    standard_deviation_nine = get_standard(listof=nine, mean=mean_nine)
-    print("probability of state nine: {}, standard deviation: {}".format(mean_nine, standard_deviation_nine))
